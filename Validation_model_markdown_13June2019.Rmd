@@ -1,14 +1,15 @@
 ---
 title: "Comparison_StochasticGillespie_ODE"
-author: "Arata Hidano"
-date: "13 June 2019"
-output: html_document
----
 knit: (function(input_file, encoding) {
   out_dir <- 'docs';
   rmarkdown::render(input_file,
  encoding=encoding,
  output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
+author: "Arata Hidano"
+date: "13 June 2019"
+output: html_document
+---
+
  
 ## Validation of Gillespie algorithm and disease transmission code in C
 
@@ -17,6 +18,7 @@ knit: (function(input_file, encoding) {
 2. And comparing results from modified Gillespie Algorithm (modified SSA) i.e. disease status transition occurs considering their disease status history
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
 ```
 
 ## Read simulated output from C
