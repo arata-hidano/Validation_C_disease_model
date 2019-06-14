@@ -1,0 +1,12 @@
+name: "Disease simulation"
+output_dir: "docs"
+navbar:
+ title: "C code Validation"
+ left:
+  - text: "Home"
+    href: index.html
+  - text: "Validating against ODE"
+    href: Validation_model_markdown_13June2019.html
+output:
+ html_document:
+  theme: cosmo

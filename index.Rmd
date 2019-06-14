@@ -1,0 +1,34 @@
+---
+title: "index"
+output: html_document
+---
+
+This page describes the validation process of C code for a disease simulation model.
+
+The following describes how to reproduce the results of validating C code against R ODE system.
+
+Here, the aim is two-fold.
+
+1. Validate C code: compare results from pure Gillespie algorithm writtein C against results from R using ODE system: in order to validate that C code is working as desired.
+
+2. Validate the modified Gillespie Algorithm: under modified Gillespie Algorithm, both Markov and non-Markov events occur and as a result, disease dynamics differ (but may not be dramatically different). 
+This is to show the impact of the modified Gillespie Algorithm on the disease synamics.
+
+#Process
+
+#0. Download necessary files from https://github.com/arata-hidano/Molecular_simulation
+If you can compile C source file, download only two C source files (modified_SSA.c and SSA.c) and two data files (farm_data.csv and animal_data.csv)
+If you do not wish to compile by your own, alternatively there are simulated results in csv format, so please use them. You need 100 results from SSA (all in SSA folder, named NumberAnimalDataFileSSA with number from 0 to 99) 
+and 100 results from modified SSA (in the modified__SSA folder, named NumberAnimalDataFile with number from 0 to 99).
+
+#1.  Run C code and save results into an appropriate folder.
+Note: You can change parameters that you can find the top in the source code
+ - num_animals: herd size, default 500
+ - tot_iterations: the number of iterations to be performed, defult 100
+ - max_S3toS4_FMD: the maximum duration from I to R status, default 100
+ - max_S2toS3_FMD: the maximum duration from E to I status, default 50
+ - beta_a_FMD: within-herd transmission parameter, default 0.5
+
+
+#2. Open R markdown code "Validation_model_markdown_13June2019.Rmd". Make sure you installed R packages "deSolve" and "ggplot2" to reproduce the results.
+Also you need to save results from C in the appropriate folder name.

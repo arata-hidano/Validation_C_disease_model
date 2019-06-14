@@ -1,15 +1,7 @@
----
-title: "Comparison_StochasticGillespie_ODE"
-knit: (function(input_file, encoding) {
-  out_dir <- 'docs';
-  rmarkdown::render(input_file,
- encoding=encoding,
- output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
-author: "Arata Hidano"
-date: "13 June 2019"
-output: html_document
----
 
+---
+title: "Validating against ODE"
+---
  
 ## Validation of Gillespie algorithm and disease transmission code in C
 
@@ -21,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ## Read simulated output from C
-```{r,echo=F}
+```{r}
 #=========================================================================================
 # make sure the path is correct: you need to put simulated output from modified_SSA.c in "E:/tem/analysis" and outout from SSA.c in  "E:/tem/analysis/SSA", or alternatively anywhere that suits you. If latter, make sure you change
 # location variable to a proper name
@@ -58,7 +50,7 @@ for(i in seq(data_ssa_list))
 ```
 
 ## Preprare Plot for 100 simulated results from C code both pure SSA and modified SSA
-```{r,echo=F}
+```{r}
 #=========================================================================================
 library(ggplot2)
 
@@ -111,7 +103,7 @@ for(i in seq(data_ssa_list))
 ```
 
 ## ODE for a within-farm transmission
-```{r, echo=F}
+```{r}
 #===========================================================================
 library(deSolve)
 
@@ -158,7 +150,7 @@ colnames(SEIR.sol)[5] <-"R"
 ```
 
 ## Plot and compare results from C (pure SSA and modified SSA) and R (ODE)
-```{r,echo=F}
+```{r}
 #========================================================================
 ## Pure SSA
 # Susceptible: blue(stochastic output from C) and black(ODE from R)
