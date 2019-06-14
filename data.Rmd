@@ -1,0 +1,16 @@
+---
+title: "Data and Source code"
+output: html_document
+---
+
+Data for validation can be found here:
+  Simulated outputs https://github.com/arata-hidano/Molecular_simulation/tree/master/Simulation_output
+  Data for simulation https://github.com/arata-hidano/Molecular_simulation/tree/master/Simulation%20data
+  
+C source code used for validation can be found here:
+https://github.com/arata-hidano/Molecular_simulation/tree/master/Validation%20code
+
+R markdown to reproduce the validation can be found here:
+https://github.com/arata-hidano/Validation_C_disease_model/blob/master/Validation_model_markdown_13June2019.Rmd
+
+
