@@ -18,7 +18,6 @@ output: html_document
 2. And comparing results from modified Gillespie Algorithm (modified SSA) i.e. disease status transition occurs considering their disease status history
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-
 ```
 
 ## Read simulated output from C
