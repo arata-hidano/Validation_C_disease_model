@@ -7,6 +7,8 @@ navbar:
     href: index.html
   - text: "Validating against ODE"
     href: Validation_model_markdown_13June2019.html
+  - text: "Data and Source code"
+    href: data.html
 output:
  html_document:
   theme: cosmo
