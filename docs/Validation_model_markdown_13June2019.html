@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+
+
+<title>Validating against ODE</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">C code Validation</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="Validation_model_markdown_13June2019.html">Validating against ODE</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Validating against ODE</h1>
+
+</div>
+
+
+<div id="validation-of-gillespie-algorithm-and-disease-transmission-code-in-c" class="section level2">
+<h2>Validation of Gillespie algorithm and disease transmission code in C</h2>
+<ol style="list-style-type: decimal">
+<li><p>Comparing results from pure Stochastic Gillespie Algorithm (pure SSA) i.e. all disease status transition occurs probalistically with ignoring the history of their status (e.g. how long being already being infectious doesn ot affect the timing of an individual to become immune) to ODE</p></li>
+<li><p>And comparing results from modified Gillespie Algorithm (modified SSA) i.e. disease status transition occurs considering their disease status history</p></li>
+</ol>
+</div>
+<div id="read-simulated-output-from-c" class="section level2">
+<h2>Read simulated output from C</h2>
+<pre class="r"><code>#=========================================================================================
+# make sure the path is correct: you need to put simulated output from modified_SSA.c in &quot;E:/tem/analysis&quot; and outout from SSA.c in  &quot;E:/tem/analysis/SSA&quot;, or alternatively anywhere that suits you. If latter, make sure you change
+# location variable to a proper name
+
+# Read data for modified SSA
+location = &quot;E:/tem/analysis&quot;
+setwd(location)
+lf_r&lt;-list.files(path=location,full.names=F,pattern=&quot;csv&quot;)
+data_list&lt;-lapply(lf_r,function(i){
+  read.table(i,header = FALSE, sep = &quot;,&quot;)
+})
+
+for(i in seq(data_list))
+{
+  num&lt;-gsub(&quot;\\D&quot;,&quot;&quot;,substring(lf_r[i],21,22))
+  assign(paste0(&quot;df&quot;,num),data_list[[i]])
+  
+}
+
+# Read SSA data
+location = &quot;E:/tem/analysis/SSA&quot;
+setwd(location)
+lf_ssa&lt;-list.files(path=location,full.names=F,pattern=&quot;csv&quot;)
+data_ssa_list&lt;-lapply(lf_ssa,function(i){
+  read.table(i,header = FALSE, sep = &quot;,&quot;)
+})
+
+for(i in seq(data_ssa_list))
+{
+  num&lt;-gsub(&quot;\\D&quot;,&quot;&quot;,substring(lf_ssa[i],24,25))
+  assign(paste0(&quot;df_ssa&quot;,num),data_ssa_list[[i]])
+  
+}</code></pre>
+</div>
+<div id="preprare-plot-for-100-simulated-results-from-c-code-both-pure-ssa-and-modified-ssa" class="section level2">
+<h2>Preprare Plot for 100 simulated results from C code both pure SSA and modified SSA</h2>
+<pre class="r"><code>#=========================================================================================
+library(ggplot2)
+
+p_s &lt;-p_e&lt;-p_i&lt;-p_r&lt;- ggplot()
+
+for(i in seq(data_list))
+{
+  tem&lt;-get(paste0(&quot;df&quot;,i-1))
+  tem &lt;- data.frame(t(tem))
+  tem &lt;- tem[tem$X1&gt;0 &amp; !is.na(tem$X1),]
+  colnames(tem)[1] &lt;- &quot;TIME&quot;
+  colnames(tem)[2] &lt;- &quot;S&quot;
+  colnames(tem)[3] &lt;- &quot;E&quot;
+  colnames(tem)[4] &lt;- &quot;I&quot;
+  colnames(tem)[5] &lt;- &quot;R&quot;
+  tem &lt;- tem[tem$TIME&lt;=100,]
+  loop_input &lt;- &quot;geom_line(data=tem,aes(x = TIME, y = S),color=&#39;lightblue&#39;)&quot;
+  p_s &lt;- p_s + eval(parse(text=loop_input))
+  loop_input &lt;- &quot;geom_line(data=tem,aes(x = TIME, y = E),color=&#39;lightblue&#39;)&quot;
+  p_e &lt;- p_e + eval(parse(text=loop_input))
+  loop_input &lt;- &quot;geom_line(data=tem,aes(x = TIME, y = I),color=&#39;lightblue&#39;)&quot;
+  p_i &lt;- p_i + eval(parse(text=loop_input))
+  loop_input &lt;- &quot;geom_line(data=tem,aes(x = TIME, y = R),color=&#39;lightblue&#39;)&quot;
+  p_r &lt;- p_r + eval(parse(text=loop_input))
+}
+
+#Do same for SSA
+p_s_ssa &lt;-p_e_ssa &lt;-p_i_ssa &lt;-p_r_ssa &lt;- ggplot()
+
+for(i in seq(data_ssa_list))
+{
+  tem&lt;-get(paste0(&quot;df_ssa&quot;,i-1))
+  tem &lt;- data.frame(t(tem))
+  tem &lt;- tem[tem$X1&gt;0 &amp; !is.na(tem$X1),]
+  colnames(tem)[1] &lt;- &quot;TIME&quot;
+  colnames(tem)[2] &lt;- &quot;S&quot;
+  colnames(tem)[3] &lt;- &quot;E&quot;
+  colnames(tem)[4] &lt;- &quot;I&quot;
+  colnames(tem)[5] &lt;- &quot;R&quot;
+  tem &lt;- tem[tem$TIME&lt;=100,]
+  loop_input &lt;- &quot;geom_line(data=tem,aes(x = TIME, y = S),color=&#39;lightblue&#39;)&quot;
+  p_s_ssa &lt;- p_s_ssa + eval(parse(text=loop_input))
+  loop_input &lt;- &quot;geom_line(data=tem,aes(x = TIME, y = E),color=&#39;lightblue&#39;)&quot;
+  p_e_ssa &lt;- p_e_ssa + eval(parse(text=loop_input))
+  loop_input &lt;- &quot;geom_line(data=tem,aes(x = TIME, y = I),color=&#39;lightblue&#39;)&quot;
+  p_i_ssa &lt;- p_i_ssa + eval(parse(text=loop_input))
+  loop_input &lt;- &quot;geom_line(data=tem,aes(x = TIME, y = R),color=&#39;lightblue&#39;)&quot;
+  p_r_ssa &lt;- p_r_ssa + eval(parse(text=loop_input))
+}</code></pre>
+</div>
+<div id="ode-for-a-within-farm-transmission" class="section level2">
+<h2>ODE for a within-farm transmission</h2>
+<pre class="r"><code>#===========================================================================
+library(deSolve)
+
+#setup disease dynamic function
+SEIR.dyn &lt;- function(t,var,par){
+  S &lt;- var[1]
+  E &lt;- var[2]
+  I &lt;- var[3]
+  R &lt;- var[4]
+  N &lt;- S + E + I + R
+  beta &lt;- par[1] #S-&gt;E
+  gamma &lt;- par[2] # E-&gt;I
+  delta &lt;- par[3] #I-&gt;R
+# Derivatives
+  dS &lt;- -beta*S*I/N
+  dE &lt;- beta*S*I/N - gamma*E
+  dI &lt;- gamma*E - delta*I
+  dR &lt;- delta*I
+# Return the derivatives
+  list(c(dS,dE,dI,dR))
+}
+
+# Set up parameter
+beta &lt;- 0.5
+gamma &lt;- 1/25 #expected value for E-&gt;I in IBM
+delta &lt;- 1/50 #expected value for I-&gt;R in IBM
+SEIR.par &lt;- c(beta,gamma,delta)
+
+SEIR.init &lt;- c(499,0,1,0) #one infectious
+
+SEIR.t &lt;- seq(0,100,by=0.1)
+
+# Run ODE
+SEIR.sol &lt;- lsoda(SEIR.init,SEIR.t, SEIR.dyn, SEIR.par)
+
+
+#Rename results
+SEIR.sol &lt;-data.frame(SEIR.sol)
+colnames(SEIR.sol)[1] &lt;- &quot;TIME&quot;
+colnames(SEIR.sol)[2] &lt;-&quot;S&quot; 
+colnames(SEIR.sol)[3] &lt;-&quot;E&quot; 
+colnames(SEIR.sol)[4] &lt;-&quot;I&quot; 
+colnames(SEIR.sol)[5] &lt;-&quot;R&quot; </code></pre>
+</div>
+<div id="plot-and-compare-results-from-c-pure-ssa-and-modified-ssa-and-r-ode" class="section level2">
+<h2>Plot and compare results from C (pure SSA and modified SSA) and R (ODE)</h2>
+<pre class="r"><code>#========================================================================
+## Pure SSA
+# Susceptible: blue(stochastic output from C) and black(ODE from R)
+p_s_ssa_combined &lt;- p_s_ssa + geom_line(data=SEIR.sol,aes(x=TIME,y=S),color=&quot;black&quot;,size=1)
+
+# Exposed: blue(stochastic output from C) and black(ODE from R)
+p_e_ssa_combined &lt;- p_e_ssa + geom_line(data=SEIR.sol,aes(x=TIME,y=E),color=&quot;black&quot;,size=1)
+
+# Infectious: blue(stochastic output from C) and black(ODE from R)
+p_i_ssa_combined &lt;- p_i_ssa + geom_line(data=SEIR.sol,aes(x=TIME,y=I),color=&quot;black&quot;,size=1)
+
+# Immune: blue(stochastic output from C) and black(ODE from R)
+p_r_ssa_combined &lt;- p_r_ssa + geom_line(data=SEIR.sol,aes(x=TIME,y=R),color=&quot;black&quot;,size=1)
+
+p_s_ssa_combined</code></pre>
+<pre><code>## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?</code></pre>
+<p><img src="Validation_model_markdown_13June2019_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>p_e_ssa_combined</code></pre>
+<pre><code>## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?</code></pre>
+<p><img src="Validation_model_markdown_13June2019_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+<pre class="r"><code>p_i_ssa_combined</code></pre>
+<pre><code>## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?</code></pre>
+<p><img src="Validation_model_markdown_13June2019_files/figure-html/unnamed-chunk-4-3.png" width="672" /></p>
+<pre class="r"><code>p_r_ssa_combined</code></pre>
+<pre><code>## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?</code></pre>
+<p><img src="Validation_model_markdown_13June2019_files/figure-html/unnamed-chunk-4-4.png" width="672" /></p>
+<pre class="r"><code>## Stochastic Gillespie results are surrounding the result from R ODE system 
+
+## Modified SSA
+# Susceptible: blue(stochastic output from C) and black(ODE from R)
+p_s_combined &lt;- p_s + geom_line(data=SEIR.sol,aes(x=TIME,y=S),color=&quot;black&quot;,size=1)
+
+# Exposed: blue(stochastic output from C) and black(ODE from R)
+p_e_combined &lt;- p_e + geom_line(data=SEIR.sol,aes(x=TIME,y=E),color=&quot;black&quot;,size=1)
+
+# Infectious: blue(stochastic output from C) and black(ODE from R)
+p_i_combined &lt;- p_i + geom_line(data=SEIR.sol,aes(x=TIME,y=I),color=&quot;black&quot;,size=1)
+
+# Immune: blue(stochastic output from C) and black(ODE from R)
+p_r_combined &lt;- p_r + geom_line(data=SEIR.sol,aes(x=TIME,y=R),color=&quot;black&quot;,size=1)
+
+p_s_combined</code></pre>
+<pre><code>## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?</code></pre>
+<p><img src="Validation_model_markdown_13June2019_files/figure-html/unnamed-chunk-4-5.png" width="672" /></p>
+<pre class="r"><code>p_e_combined</code></pre>
+<pre><code>## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?</code></pre>
+<p><img src="Validation_model_markdown_13June2019_files/figure-html/unnamed-chunk-4-6.png" width="672" /></p>
+<pre class="r"><code>p_i_combined</code></pre>
+<pre><code>## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?</code></pre>
+<p><img src="Validation_model_markdown_13June2019_files/figure-html/unnamed-chunk-4-7.png" width="672" /></p>
+<pre class="r"><code>p_r_combined</code></pre>
+<pre><code>## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?
+## geom_path: Each group consists of only one observation. Do you need to
+## adjust the group aesthetic?</code></pre>
+<p><img src="Validation_model_markdown_13June2019_files/figure-html/unnamed-chunk-4-8.png" width="672" /></p>
+<pre class="r"><code>## Modified Stochastic Gillespie results are similar to R ODE system but not identical, especially for R group. This is because modified algorithm takes into account the duration which an individual spent in each disease status, which is more realistic than assuming that disease status change happens anytime (i.e. the probability of an individual moving to the next disease status is the same for an individual who spent 100 days in the status and an individual who spent only one day in the status)</code></pre>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
